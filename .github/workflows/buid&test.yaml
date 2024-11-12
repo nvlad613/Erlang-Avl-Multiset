@@ -24,4 +24,4 @@ jobs:
 
       - name: test
         working-directory: ${{github.workspace}}
-        run: rebar3 eunit
+        run: rebar3 ct
