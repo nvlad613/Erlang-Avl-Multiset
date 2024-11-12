@@ -1,7 +1,7 @@
 -module(avl).
 
 -export_types(avlnode/0).
--export([new/2, upsert/3, delete/2, find/2, sorted/1, pop_leaf/1]).
+-export([new/2, upsert/3, delete/2, find/2, sorted/1, fold/3, pop_leaf/1]).
 
 -record(node, {
     key :: any(),
@@ -192,3 +192,10 @@ pop_leaf(none) ->
 pop_leaf(Node) ->
     Leaf = find_leaf(Node),
     {delete(Node, Leaf), Leaf}.
+
+fold(none, Acc, _) ->
+    Acc;
+fold(#node{l_tree = LTree, r_tree = RTree, value = Val, key = Key}, Acc, Func) ->
+    AccLeft = fold(LTree, Acc, Func),
+    AccRight = fold(RTree, AccLeft, Func),
+    Func(AccRight, {Key, Val}).

@@ -1,6 +1,18 @@
 -module(multiset).
 
--export([new/0, add/2, add/3, delete/2, find/2, size/1, sorted/1, equals/2, merge/2]).
+-export([
+    new/0,
+    add/2, add/3,
+    delete/2,
+    find/2,
+    size/1,
+    sorted/1,
+    equals/2,
+    merge/2,
+    fold/3,
+    map/2,
+    filter/2
+]).
 
 -record(multiset, {
     tree :: avl:avlnode(),
@@ -50,12 +62,32 @@ equals(SetA, SetB) when not is_record(SetA, multiset); not is_record(SetB, multi
 equals(#multiset{tree = TreeA}, #multiset{tree = TreeB}) ->
     avl:sorted(TreeA) =:= avl:sorted(TreeB).
 
+fold(#multiset{tree = Tree}, Acc, Func) ->
+    avl:fold(Tree, Acc, Func).
+
 merge(SetA, SetB) ->
-    {AvlBUpdated, Leaf} = avl:pop_leaf(SetB#multiset.tree),
-    SetBUpdated = SetB#multiset{
-        tree = AvlBUpdated
-    },
-    merge(
-        add(SetA, Leaf),
-        SetBUpdated
+    fold(
+        SetB,
+        SetA,
+        fun(Self, {Key, Value}) -> add(Self, Key, Value) end
+    ).
+
+map(Self, Func) ->
+    fold(
+        Self,
+        [],
+        fun(Acc, Value) -> [Func(Value) | Acc] end
+    ).
+
+filter_builtin(Value, Acc, Func) ->
+    case Func(Acc, Value) of
+        true -> [Value | Acc];
+        false -> Acc
+    end.
+
+filter(Self, Func) ->
+    fold(
+        Self,
+        [],
+        fun(Acc, Value) -> filter_builtin(Value, Acc, Func) end
     ).
