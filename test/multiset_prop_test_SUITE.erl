@@ -1,4 +1,4 @@
--module(multiset_unit_test_SUITE).
+-module(multiset_prop_test_SUITE).
 
 -include_lib("stdlib/include/assert.hrl").
 -include_lib("proper/include/proper.hrl").
