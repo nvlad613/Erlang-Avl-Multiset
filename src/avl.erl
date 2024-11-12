@@ -57,7 +57,7 @@ append_left(Parent, Node) ->
     Child = upsert(Parent#node.l_tree, Node),
     ParentUpdated = set_left(Parent, Child),
     case factor(ParentUpdated) > 1 of
-        true -> make_LL_or_LR(ParentUpdated);
+        true -> do_ll_or_lr(ParentUpdated);
         false -> ParentUpdated
     end.
 
@@ -71,14 +71,14 @@ append_right(Parent, Node) ->
     Child = upsert(Parent#node.r_tree, Node),
     ParentUpdated = set_right(Parent, Child),
     case factor(ParentUpdated) < -1 of
-        true -> make_RR_or_RL(ParentUpdated);
+        true -> do_rr_or_rl(ParentUpdated);
         false -> ParentUpdated
     end.
 
 % depends on factor:
 % LL -> rotate_right(ROOT)
 % LR -> rotate_left(LEFT_CHILD), rotate_right(ROOT)
-make_LL_or_LR(Root) ->
+do_ll_or_lr(Root) ->
     case factor(Root#node.l_tree) > 0 of
         true ->
             rotate_right(Root);
@@ -91,7 +91,7 @@ make_LL_or_LR(Root) ->
 % depends on factor:
 % RR -> rotate_left(ROOT)
 % RL -> rotate_right(RIGHT_CHILD), rotate_left(ROOT)
-make_RR_or_RL(Root) ->
+do_rr_or_rl(Root) ->
     case factor(Root#node.r_tree) < 0 of
         true ->
             rotate_left(Root);
@@ -163,8 +163,9 @@ find_leaf(Node) ->
 
 rebalance(Node) ->
     case factor(Node) of
-        -2 -> make_RR_or_RL(Node);
-        2 -> make_LL_or_LR(Node)
+        -2 -> do_rr_or_rl(Node);
+        2 -> do_ll_or_lr(Node);
+        _ -> Node
     end.
 
 find(#node{l_tree = Child, key = NodeKey}, Key) when Key < NodeKey ->
