@@ -3,9 +3,7 @@
 -export([run/0]).
 
 run() ->
-    Multiset = multiset:from_list([100, 10, 83, 1, 83, 10]),
-    Filtered = multiset:filter(
-        Multiset,
-        fun({_, Count}) -> Count == 1 end
-    ),
-    multiset:to_list(Filtered).
+    MSet = multiset:from_list([1, 243, 2453]),
+    Neutral = multiset:new(),
+    multiset:equals(multiset:merge(MSet, Neutral), MSet) andalso
+        multiset:equals(multiset:merge(Neutral, MSet), MSet).
