@@ -1,33 +1,28 @@
-# Лабораторная работа 2
-Ненов Владислав Александрович, P34082
-Вариант: avl-bag
-=====
+# Objective  
+Gain experience in constructing custom data types, polymorphism, recursive algorithms, and testing methods (unit testing, property-based testing).  
 
-# Цель
-Освоиться с построением пользовательских типов данных, полиморфизмом, рекурсивными алгоритмами и средствами тестирования (unit testing, property-based testing).
+# Requirements  
+The task is to implement a set based on a hash table.  
 
-# Требования
-Необходимо реализовать множество на хэш-таблице.
+1. Functions:  
+    - Adding and removing elements;  
+    - Filtering;  
+    - Mapping;  
+    - Folding (left and right);  
+    - The structure must be a [monoid](https://en.wikipedia.org/wiki/Monoid).  
+2. Data structures must be immutable.  
+3. The library must be tested using unit testing.  
+4. The library must be tested using property-based testing (at least 3 properties, including monoid properties).  
+5. The structure must be polymorphic.  
+6. Use idiomatic programming style for the technology.  
 
-1. Функции:
-    - добавление и удаление элементов;
-    - фильтрация;
-    - отображение (map);
-    - свертки (левая и правая);
-    - структура должна быть [моноидом](https://ru.m.wikipedia.org/wiki/Моноид).
-2. Структуры данных должны быть неизменяемыми.
-3. Библиотека должна быть протестирована в рамках unit testing.
-4. Библиотека должна быть протестирована в рамках property-based тестирования (как минимум 3 свойства, включая свойства моноида).
-5. Структура должна быть полиморфной.
-6. Требуется использовать идиоматичный для технологии стиль программирования.
+# Implementation  
+Under the hood, the functions in the `multiset` module rely on tree functions from the `avl` module.  
 
-# Реализация
-Под копотом функций модуля multiset функции для работы с деревом из модуля avl.
+## Multiset  
+Main functions.  
 
-## Multiset
-Основные функции.
-
-### find
+### find  
 ```erlang
 find(#multiset{tree = none}, _) ->
     0;
@@ -37,9 +32,9 @@ find(Self, Item) ->
         true -> Found;
         false -> 0
     end.
-```
+```  
 
-### delete
+### delete  
 ```erlang
 delete(#multiset{tree = none}, _) ->
     new();
@@ -56,9 +51,9 @@ delete(Self, Item) ->
         _ ->
             add(Self, Item, -1)
     end.
-```
+```  
 
-### add
+### add  
 ```erlang
 add(Self, Item) ->
     add(Self, Item, 1).
@@ -71,17 +66,17 @@ add(Self, Item, Count) ->
         tree = avl:upsert(Self#multiset.tree, Item, Found + Count),
         size = Self#multiset.size + Count
     }.
-```
+```  
 
-### fold
+### fold  
 ```erlang
 fold(#multiset{tree = none}, Acc, _) ->
     Acc;
 fold(#multiset{tree = Tree}, Acc, Func) ->
     avl:fold(Tree, Acc, Func).
-```
+```  
 
-### map
+### map  
 ```erlang
 map(Self, Func) ->
     fold(
@@ -89,9 +84,9 @@ map(Self, Func) ->
         new(),
         fun(Acc, Value) -> add(Acc, Func(Value)) end
     ).
-```
+```  
 
-### filter
+### filter  
 ```erlang
 filter(Self, Func) ->
     fold(
@@ -99,8 +94,7 @@ filter(Self, Func) ->
         new(),
         fun(Acc, Value) -> filter_builtin(Value, Acc, Func) end
     ).
-```
+```  
 
-## Avl
-
-Лучше смотреть в коде, потому что там его довольно много)
+## Avl  
+Better to check the code directly because there’s quite a lot of it :)  
